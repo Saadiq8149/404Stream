@@ -210,117 +210,69 @@ def configure_qbittorrent():
         print("  4. Set username: admin, password: admin")
 
 def create_shortcut():
-    shortcut = DESKTOP / LAUNCHER_NAME
+    """Create desktop shortcut by copying launcher to desktop"""
+    print("🎯 Creating desktop launcher...")
+
     # Check for both .exe and .py versions
     target_exe = INSTALL_DIR / "launcher.exe"
     target_py = INSTALL_DIR / "launcher.py"
 
-    icon = INSTALL_DIR / "icon.ico"
-
-    if not icon.exists():
-        icon = Path("./icon.ico")
-
-    # Determine target file and arguments
-    if target_exe.exists():
-        target = target_exe
-        arguments = ""
-    elif target_py.exists():
-        # For .py files, we need to use python.exe as target
-        target = "python.exe"
-        arguments = str(target_py)  # Remove quotes here, PowerShell will handle them
-    else:
-        print("⚠️  No launcher file found!")
-        return
-
-    # Use default icon if custom icon doesn't exist
-    if not icon.exists():
-        if target_py.exists():
-            icon = target_py
-        else:
-            icon = target
-
     try:
-        # Create shortcut using PowerShell with proper escaping
-        if arguments:
-            # For python scripts, escape the path properly
-            ps_script = f'''
-                $WshShell = New-Object -comObject WScript.Shell
-                $Shortcut = $WshShell.CreateShortcut("{shortcut}")
-                $Shortcut.TargetPath = "{target}"
-                $Shortcut.Arguments = '"{arguments}"'
-                $Shortcut.WorkingDirectory = "{INSTALL_DIR}"
-                $Shortcut.IconLocation = "{icon}"
-                $Shortcut.Save()
-                            '''
+        if target_exe.exists():
+            # Copy the .exe file directly to desktop
+            desktop_launcher = DESKTOP / "404Stream.exe"
+            shutil.copy2(target_exe, desktop_launcher)
+            print(f"✅ Launcher copied to desktop: {desktop_launcher}")
+
+        elif target_py.exists():
+            # Create a batch file that runs the Python script
+            create_batch_launcher()
+
         else:
-            # For exe files, no arguments needed
-            ps_script = f'''
-                $WshShell = New-Object -comObject WScript.Shell
-                $Shortcut = $WshShell.CreateShortcut("{shortcut}")
-                $Shortcut.TargetPath = "{target}"
-                $Shortcut.WorkingDirectory = "{INSTALL_DIR}"
-                $Shortcut.IconLocation = "{icon}"
-                $Shortcut.Save()
-                            '''
+            print("⚠️  No launcher file found!")
+            return
 
-        # Write script to temp file to avoid command line issues
-        temp_ps1 = Path(os.environ["TEMP"]) / "create_shortcut.ps1"
-        with open(temp_ps1, 'w', encoding='utf-8') as f:
-            f.write(ps_script)
-
-        # Execute PowerShell script
-        result = subprocess.run(
-            ["powershell", "-ExecutionPolicy", "Bypass", "-File", str(temp_ps1)],
-            shell=True,
-            check=True,
-            capture_output=True,
-            text=True
-        )
-
-        # Cleanup temp file
-        temp_ps1.unlink()
-
-        # Verify shortcut was created
-        if shortcut.exists():
-            print(f"🎯 Desktop shortcut created: {shortcut}")
-        else:
-            print("⚠️  Shortcut file not found after creation")
-
-    except subprocess.CalledProcessError as e:
-        print(f"⚠️  PowerShell error creating shortcut: {e}")
-        print(f"Output: {e.stdout}")
-        print(f"Error: {e.stderr}")
-        # Try alternative method - create batch file
-        print("🔄 Trying alternative batch file method...")
-        create_batch_launcher(shortcut, target, arguments)
     except Exception as e:
-        print(f"⚠️  Failed to create shortcut: {e}")
-        # Try alternative method - create batch file
-        print("🔄 Trying alternative batch file method...")
-        create_batch_launcher(shortcut, target, arguments)
+        print(f"⚠️  Failed to create desktop launcher: {e}")
+        print("🔄 Trying batch file method...")
+        create_batch_launcher()
 
-def create_batch_launcher(shortcut, target, arguments):
-    """Create a batch file as fallback"""
+def create_batch_launcher():
+    """Create a batch file launcher as fallback"""
     try:
         batch_file = DESKTOP / "404Stream.bat"
-        if arguments:
+        target_py = INSTALL_DIR / "launcher.py"
+
+        if target_py.exists():
             batch_content = f'''@echo off
-            cd /d "{INSTALL_DIR}"
-            "{target}" "{arguments}"
-            pause
-            '''
+title 404Stream Launcher
+cd /d "{INSTALL_DIR}"
+python "{target_py}"
+if errorlevel 1 (
+    echo.
+    echo [ERROR] Failed to start 404Stream
+    echo Make sure Python is installed and in PATH
+    echo.
+    pause
+)
+'''
         else:
+            # Fallback - just navigate to install directory
             batch_content = f'''@echo off
-            cd /d "{INSTALL_DIR}"
-            "{target}"
-            pause
-            '''
+title 404Stream Directory
+echo Opening 404Stream installation directory...
+cd /d "{INSTALL_DIR}"
+explorer .
+echo.
+echo Please run launcher.py or launcher.exe from this directory
+pause
+'''
 
         with open(batch_file, 'w') as f:
             f.write(batch_content)
 
-        print(f"🎯 Batch launcher created: {batch_file}")
-        print("   (You can double-click this to run 404Stream)")
+        print(f"✅ Batch launcher created: {batch_file}")
+        print("   (Double-click this file to run 404Stream)")
 
     except Exception as e:
         print(f"⚠️  Failed to create batch launcher: {e}")
