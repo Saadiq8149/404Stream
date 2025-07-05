@@ -179,18 +179,18 @@ def configure_qbittorrent():
 
         # qBittorrent config content - exact format as shown
         config_content = """[Preferences]
-General\\CloseToTrayNotified=true
-WebUI\\Enabled=true
-webui\\password_ha1=@ByteArray(5fbaa7bc1fcd7e2c58cda51f4f1e3a35)
-WebUI\\Password_PBKDF2="@ByteArray(2qFYsRE4JYnYFTDIiox8pA==:K+0SwVfPiiDM9LEqx9OvKm1GVZJ0lp9WkHSaPfN0PGUzp/g3q1mtfcRvTcKhj1Pl388AaNfXRnubZChkOGCd1A==)"
-WebUI\\LocalHostAuth=false
-general\\locale=en
-webui\\useupnp=false
-webui\\port=8080
-webui\\username=admin
-webui\\usereverseproxy=false
-webui\\csrfprotection=false
-"""
+            General\\CloseToTrayNotified=true
+            WebUI\\Enabled=true
+            webui\\password_ha1=@ByteArray(5fbaa7bc1fcd7e2c58cda51f4f1e3a35)
+            WebUI\\Password_PBKDF2="@ByteArray(2qFYsRE4JYnYFTDIiox8pA==:K+0SwVfPiiDM9LEqx9OvKm1GVZJ0lp9WkHSaPfN0PGUzp/g3q1mtfcRvTcKhj1Pl388AaNfXRnubZChkOGCd1A==)"
+            WebUI\\LocalHostAuth=false
+            general\\locale=en
+            webui\\useupnp=false
+            webui\\port=8080
+            webui\\username=admin
+            webui\\usereverseproxy=false
+            webui\\csrfprotection=false
+            """
 
         # Write the config directly to avoid ConfigParser formatting issues
         with open(QBIT_CONFIG_PATH, 'w', encoding='utf-8') as f:
@@ -227,7 +227,7 @@ def create_shortcut():
     elif target_py.exists():
         # For .py files, we need to use python.exe as target
         target = "python.exe"
-        arguments = f'"{target_py}"'
+        arguments = str(target_py)  # Remove quotes here, PowerShell will handle them
     else:
         print("⚠️  No launcher file found!")
         return
@@ -241,15 +241,27 @@ def create_shortcut():
 
     try:
         # Create shortcut using PowerShell with proper escaping
-        ps_script = f'''
-$WshShell = New-Object -comObject WScript.Shell
-$Shortcut = $WshShell.CreateShortcut("{shortcut}")
-$Shortcut.TargetPath = "{target}"
-$Shortcut.Arguments = "{arguments}"
-$Shortcut.WorkingDirectory = "{INSTALL_DIR}"
-$Shortcut.IconLocation = "{icon}"
-$Shortcut.Save()
-        '''
+        if arguments:
+            # For python scripts, escape the path properly
+            ps_script = f'''
+                $WshShell = New-Object -comObject WScript.Shell
+                $Shortcut = $WshShell.CreateShortcut("{shortcut}")
+                $Shortcut.TargetPath = "{target}"
+                $Shortcut.Arguments = '"{arguments}"'
+                $Shortcut.WorkingDirectory = "{INSTALL_DIR}"
+                $Shortcut.IconLocation = "{icon}"
+                $Shortcut.Save()
+                            '''
+        else:
+            # For exe files, no arguments needed
+            ps_script = f'''
+                $WshShell = New-Object -comObject WScript.Shell
+                $Shortcut = $WshShell.CreateShortcut("{shortcut}")
+                $Shortcut.TargetPath = "{target}"
+                $Shortcut.WorkingDirectory = "{INSTALL_DIR}"
+                $Shortcut.IconLocation = "{icon}"
+                $Shortcut.Save()
+                            '''
 
         # Write script to temp file to avoid command line issues
         temp_ps1 = Path(os.environ["TEMP"]) / "create_shortcut.ps1"
@@ -278,26 +290,31 @@ $Shortcut.Save()
         print(f"⚠️  PowerShell error creating shortcut: {e}")
         print(f"Output: {e.stdout}")
         print(f"Error: {e.stderr}")
-        # Try alternative method
+        # Try alternative method - create batch file
+        print("🔄 Trying alternative batch file method...")
+        create_batch_launcher(shortcut, target, arguments)
     except Exception as e:
         print(f"⚠️  Failed to create shortcut: {e}")
+        # Try alternative method - create batch file
+        print("🔄 Trying alternative batch file method...")
+        create_batch_launcher(shortcut, target, arguments)
 
 def create_batch_launcher(shortcut, target, arguments):
-    """Create a batch file as final fallback"""
+    """Create a batch file as fallback"""
     try:
         batch_file = DESKTOP / "404Stream.bat"
         if arguments:
             batch_content = f'''@echo off
-cd /d "{INSTALL_DIR}"
-{target} {arguments}
-pause
-'''
+            cd /d "{INSTALL_DIR}"
+            "{target}" "{arguments}"
+            pause
+            '''
         else:
             batch_content = f'''@echo off
-cd /d "{INSTALL_DIR}"
-"{target}"
-pause
-'''
+            cd /d "{INSTALL_DIR}"
+            "{target}"
+            pause
+            '''
 
         with open(batch_file, 'w') as f:
             f.write(batch_content)
