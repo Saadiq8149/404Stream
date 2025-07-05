@@ -13,7 +13,10 @@
 
 </div>
 
- **📱 Platform Support**: Currently Windows only. macOS and Linux support coming soon!
+## 🖥️ Platform Support
+
+**Currently supports Windows only**. macOS and Linux support coming soon!
+
 
 ✨ **UI Disclaimer**:
 - The extension UI was built with help **Claude Sonnet v4** because writing frontend code by hand is actual psychological warfare.
