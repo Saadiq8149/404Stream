@@ -26,8 +26,7 @@ QBIT_CONFIG_PATH = Path(os.environ["APPDATA"]) / "qBittorrent" / "qBittorrent.in
 # -------------------- URLs --------------------
 VLC_URL = "https://get.videolan.org/vlc/3.0.20/win64/vlc-3.0.20-win64.exe"
 QBIT_URL = (
-    "https://downloads.sourceforge.net/project/qbittorrent/qbittorrent/5.1.2/"
-    "qbittorrent_5.1.2_x64_setup.exe"
+    "https://sourceforge.net/projects/qbittorrent/files/latest/download"
 )
 
 # -------------------- Install Functions --------------------
