@@ -13,11 +13,11 @@
 
 </div>
 
-✨ **UI Disclaimer**: The extension UI was built with help **Claude Sonnet v4** because writing frontend code by hand is actual psychological warfare.
-Every time I adjusted display settings or margin or widths or messed with `flex` vs `grid`, a piece of my soul disintegrated.
-Tailwind makes things “easier,” they said — *they lied*.
-So yeah, I used a bit of AI they said — *a bit they lied*.
-If you like the UI, great. If you don't… well, blame the AI.
+✨ **UI Disclaimer**:
+- The extension UI was built with help **Claude Sonnet v4** because writing frontend code by hand is actual psychological warfare.
+- Every time I adjusted display settings or margin or widths or messed with `flex` vs `grid`, a piece of my soul disintegrated.
+- Tailwind makes things “easier,” they said — *they lied*.
+- So yeah, "I used a bit of AI" — *a bit he lied*. If you like the UI, great. If you don't… well, blame the AI.
 
 
 ## 🌟 Features
