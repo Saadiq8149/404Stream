@@ -20,13 +20,21 @@ export default function App() {
   const [selectedContent, setSelectedContent] = useState(null);
   const [showWatchedList, setShowWatchedList] = useState(false);
   const [showContentDetail, setShowContentDetail] = useState(false);
+  const [showInstructions, setShowInstructions] = useState(false);
 
   // Load data from chrome storage on component mount
   useEffect(() => {
     const loadData = async () => {
       try {
         if (typeof chrome !== 'undefined' && chrome.storage) {
-          const result = await chrome.storage.local.get(['imdbId', '404stream_watched', '404stream_indexed']);
+          const result = await chrome.storage.local.get(['imdbId', '404stream_watched', '404stream_indexed', '404stream_first_time']);
+
+          // Check if this is first time user
+          if (!result['404stream_first_time']) {
+            setShowInstructions(true);
+            await chrome.storage.local.set({ '404stream_first_time': true });
+          }
+
           if (result.imdbId) {
             setImdbId(result.imdbId);
             // Auto-load content metadata when IMDB ID is loaded
@@ -40,6 +48,12 @@ export default function App() {
           }
         } else {
           // Fallback to localStorage for development
+          const firstTime = localStorage.getItem('404stream_first_time');
+          if (!firstTime) {
+            setShowInstructions(true);
+            localStorage.setItem('404stream_first_time', 'true');
+          }
+
           const saved = localStorage.getItem('imdbId');
           if (saved) {
             setImdbId(saved);
@@ -53,6 +67,15 @@ export default function App() {
 
     loadData();
   }, []);
+
+
+  const handleShowInstructions = () => {
+    setShowInstructions(true);
+  };
+
+  const handleCloseInstructions = () => {
+    setShowInstructions(false);
+  };
 
   const loadContentMetadata = async (id) => {
     if (!id) return;
@@ -340,9 +363,137 @@ export default function App() {
       <div className="h-full flex flex-col">
         {/* Header */}
         <div className="text-center mb-4">
-          <h1 className="text-2xl font-bold text-white mb-1">404Stream</h1>
+          <div className="flex items-center justify-center gap-2 mb-1">
+            <h1 className="text-2xl font-bold text-white">404Stream</h1>
+            <button
+              onClick={handleShowInstructions}
+              className="px-2 py-1 bg-blue-500 hover:bg-blue-600 text-white text-xs rounded transition-colors"
+              title="Show Instructions"
+            >
+              ❓
+            </button>
+          </div>
           <p className="text-slate-300 text-sm">Stream your favorite content</p>
         </div>
+
+        {/* Instructions Modal */}
+        {showInstructions && (
+          <div className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-lg max-w-lg w-full max-h-[90vh] overflow-y-auto">
+              <div className="p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-xl font-bold text-gray-800">🎬 Welcome to 404Stream!</h2>
+                  <button
+                    onClick={handleCloseInstructions}
+                    className="px-3 py-1 bg-red-500 hover:bg-red-600 text-white text-sm rounded transition-colors"
+                  >
+                    ✕
+                  </button>
+                </div>
+
+                <div className="space-y-4 text-sm text-gray-700">
+                  {/* Step 1 */}
+                  <div className="border-l-4 border-blue-500 pl-4">
+                    <h3 className="font-semibold text-blue-700 mb-2">📋 Step 1: Find Content</h3>
+                    <p className="mb-2">
+                      Click <span className="bg-yellow-100 px-1 rounded">Search Titles in IMDB</span> to browse movies/shows
+                    </p>
+                    <p className="text-xs text-gray-600">
+                      • Visit any movie/show page on IMDB<br />
+                      • Copy the IMDB ID from URL (e.g., tt1234567)<br />
+                      • The extension will auto-detect it!
+                    </p>
+                  </div>
+
+                  {/* Step 2 */}
+                  <div className="border-l-4 border-green-500 pl-4">
+                    <h3 className="font-semibold text-green-700 mb-2">🔍 Step 2: Load Content</h3>
+                    <p className="mb-2">
+                      Content details will load automatically with poster and episode info
+                    </p>
+                    <p className="text-xs text-gray-600">
+                      • For TV shows: Select season and episode<br />
+                      • For movies: Just click Find Torrents<br />
+                      • Use the episode grid for easy navigation
+                    </p>
+                  </div>
+
+                  {/* Step 3 */}
+                  <div className="border-l-4 border-purple-500 pl-4">
+                    <h3 className="font-semibold text-purple-700 mb-2">⚡ Step 3: Find & Stream</h3>
+                    <p className="mb-2">
+                      Click <span className="bg-blue-100 px-1 rounded">🔍 Find Torrents</span> to search for sources
+                    </p>
+                    <p className="text-xs text-gray-600">
+                      • Pick quality (1080p, 720p, etc.)<br />
+                      • Use "⚡ Auto Select" for best quality<br />
+                      • Click "▶️ Stream" to play in VLC
+                    </p>
+                  </div>
+
+                  {/* Step 4 */}
+                  <div className="border-l-4 border-orange-500 pl-4">
+                    <h3 className="font-semibold text-orange-700 mb-2">📚 Step 4: Watch History</h3>
+                    <p className="mb-2">
+                      Your watched content appears in the right panel automatically
+                    </p>
+                    <p className="text-xs text-gray-600">
+                      • Continue watching from where you left off<br />
+                      • Navigate between episodes easily<br />
+                      • Access your watch history anytime
+                    </p>
+                  </div>
+
+                  {/* Tips */}
+                  <div className="bg-yellow-50 border border-yellow-200 rounded p-3">
+                    <h3 className="font-semibold text-yellow-800 mb-2">💡 Pro Tips</h3>
+                    <ul className="text-xs text-yellow-700 space-y-1">
+                      <li>• Make sure VLC Media Player is installed</li>
+                      <li>• Check that the backend server is running</li>
+                      <li>• Higher seeders = better streaming quality</li>
+                      <li>• Use "Next Episode" button for binge watching</li>
+                      <li>• Click the ❓ button anytime for help</li>
+                    </ul>
+                  </div>
+
+                  {/* Prerequisites */}
+                  <div className="bg-red-50 border border-red-200 rounded p-3">
+                    <h3 className="font-semibold text-red-800 mb-2">⚠️ Prerequisites</h3>
+                    <ul className="text-xs text-red-700 space-y-1">
+                      <li>• <strong>VLC Media Player</strong> must be installed</li>
+                      <li>• <strong>Backend server</strong> must be running (port 8000)</li>
+                      <li>• <strong>Internet connection</strong> required</li>
+                      <li>• Compatible with <strong>Chrome/Chromium</strong> browsers</li>
+                    </ul>
+                  </div>
+
+                  {/* Example */}
+                  <div className="bg-blue-50 border border-blue-200 rounded p-3">
+                    <h3 className="font-semibold text-blue-800 mb-2">🎯 Quick Example</h3>
+                    <div className="text-xs text-blue-700 space-y-1">
+                      <p><strong>1.</strong> Click "Search Titles in IMDB"</p>
+                      <p><strong>2.</strong> Find "One Piece" → Copy ID: tt0388629</p>
+                      <p><strong>3.</strong> Return to extension → Content loads automatically</p>
+                      <p><strong>4.</strong> Select Season 1, Episode 1</p>
+                      <p><strong>5.</strong> Click "🔍 Find Torrents"</p>
+                      <p><strong>6.</strong> Click "▶️ Stream" on any torrent</p>
+                      <p><strong>7.</strong> Enjoy in VLC! 🎉</p>
+                    </div>
+                  </div>
+
+                  <div className="text-center pt-4">
+                    <button
+                      onClick={handleCloseInstructions}
+                      className="px-6 py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg hover:from-blue-600 hover:to-purple-700 transition-all font-semibold"
+                    >
+                      🚀 Let's Stream!
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* GitHub Star Section */}
         <div className="text-center mb-4">
@@ -370,10 +521,28 @@ export default function App() {
               Search Titles in IMDB
             </button>
 
-            <div className="mb-4">
+            {/* First Time User Help Banner */}
+            {!imdbId && watchedContent.length === 0 && (
+              <div className="mb-4 p-3 bg-gradient-to-r from-green-50 to-blue-50 rounded-lg border border-green-200">
+                <div className="flex items-center space-x-2 mb-2">
+                  <span className="text-lg">👋</span>
+                  <h3 className="font-semibold text-green-800 text-sm">New to 404Stream?</h3>
+                </div>
+                <p className="text-xs text-green-700 mb-2">
+                  Start by clicking "Search Titles in IMDB" above to find movies or shows!
+                </p>
+                <button
+                  onClick={handleShowInstructions}
+                  className="px-3 py-1 bg-green-500 hover:bg-green-600 text-white text-xs rounded transition-colors"
+                >
+                  📖 View Full Guide
+                </button>
+              </div>
+            )}
 
+            <div className="mb-4">
               <div className="mt-1 bg-gray-50 rounded p-2 font-mono text-xs text-gray-800 display flex justify-between items-center">
-                <p>Current: {imdbId}</p>
+                <p>Current: {imdbId || 'No content selected'}</p>
                 <button
                   onClick={refetchImdbId}
                   className="px-2 py-1 bg-blue-500 text-white text-xs rounded hover:bg-blue-600 transition-colors flex-shrink-0"
@@ -381,7 +550,6 @@ export default function App() {
                   Refetch
                 </button>
               </div>
-
             </div>
 
             {/* Content Metadata Display */}
@@ -622,7 +790,7 @@ export default function App() {
                   <p className="text-xs text-gray-500">
                     {contentMetadata
                       ? 'Click "Find Torrents" to search'
-                      : 'Enter IMDB ID to start'
+                      : 'Select content to start streaming'
                     }
                   </p>
                 </div>
