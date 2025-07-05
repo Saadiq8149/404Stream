@@ -1,0 +1,6 @@
+fastapi[standard]
+uvicorn[standard]
+requests
+python-dotenv
+qbittorrent-api
+beautifulsoup4

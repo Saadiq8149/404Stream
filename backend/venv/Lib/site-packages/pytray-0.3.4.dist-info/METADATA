@@ -1,0 +1,37 @@
+Metadata-Version: 2.1
+Name: pytray
+Version: 0.3.4
+Summary: A python tools library for baking pies
+Home-page: https://github.com/muhrin/pytray.git
+Author: Martin Uhrin
+Author-email: martin.uhrin.10@ucl.ac.uk
+License: LGPLv3
+Keywords: tools utilities
+Classifier: Development Status :: 4 - Beta
+Classifier: License :: OSI Approved :: GNU Lesser General Public License v3 or later (LGPLv3+)
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Requires-Python: >=3.7
+License-File: LICENSE
+Requires-Dist: deprecation
+Provides-Extra: dev
+Requires-Dist: grayskull ; extra == 'dev'
+Requires-Dist: pip ; extra == 'dev'
+Requires-Dist: pre-commit ; extra == 'dev'
+Requires-Dist: pytest ; extra == 'dev'
+Requires-Dist: pytest-cov ; extra == 'dev'
+Requires-Dist: ipython (<6) ; extra == 'dev'
+Requires-Dist: twine ; extra == 'dev'
+Provides-Extra: docs
+Requires-Dist: Sphinx (==1.8.4) ; extra == 'docs'
+Requires-Dist: Pygments (==2.3.1) ; extra == 'docs'
+Requires-Dist: docutils (==0.14) ; extra == 'docs'
+
+Recently I've been baking a number of pies [1-2] and I've found it useful to collect commonly used code in one place.  This library contains a bunch of, often exotic, bits of code that make python so much easier to write in, especially when interacting with asyncio and concurrent threads.
+
+
+
+[1] https://github.com/aiidateam/kiwipy/
+[2] https://github.com/aiidateam/plumpy
