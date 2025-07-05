@@ -6,10 +6,10 @@
 
 **Ultimate Anime Streaming Experience**
 
-[![GitHub stars](https://img.shields.io/github/stars/shaikshahid98/404Stream?style=for-the-badge&color=a259ff)](https://github.com/shaikshahid98/404Stream/stargazers)
-[![GitHub forks](https://img.shields.io/github/forks/shaikshahid98/404Stream?style=for-the-badge&color=8b5cf6)](https://github.com/shaikshahid98/404Stream/network)
-[![GitHub issues](https://img.shields.io/github/issues/shaikshahid98/404Stream?style=for-the-badge&color=c084fc)](https://github.com/shaikshahid98/404Stream/issues)
-[![License](https://img.shields.io/github/license/shaikshahid98/404Stream?style=for-the-badge&color=7c3aed)](LICENSE)
+[![GitHub stars](https://img.shields.io/github/stars/Saadiq8149/404Stream?style=for-the-badge&color=a259ff)](https://github.com/Saadiq8149/404Stream/stargazers)
+[![GitHub forks](https://img.shields.io/github/forks/Saadiq8149/404Stream?style=for-the-badge&color=8b5cf6)](https://github.com/Saadiq8149/404Stream/network)
+[![GitHub issues](https://img.shields.io/github/issues/Saadiq8149/404Stream?style=for-the-badge&color=c084fc)](https://github.com/Saadiq8149/404Stream/issues)
+[![License](https://img.shields.io/github/license/Saadiq8149/404Stream?style=for-the-badge&color=7c3aed)](LICENSE)
 
 </div>
 
@@ -48,7 +48,7 @@
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/shaikshahid98/404Stream.git
+   git clone https://github.com/Saadiq8149/404Stream.git
    cd 404Stream
    ```
 
@@ -190,6 +190,76 @@ The extension provides a sleek popup interface with:
 - **Content Text**: High contrast white on dark
 - **UI Elements**: Consistent Inter font family
 
+## 📸 Screenshots
+
+### 🎨 **Extension UI Screenshots**
+
+#### **Main Interface**
+![Extension UI](screenshots/extension.png)
+
+### 🔧 **API Screenshots**
+
+#### **FastAPI Documentation**
+![API Docs](screenshots/api.png)
+*Interactive UI at `http://localhost:8000/docs`*
+
+#### **Content Scraping Endpoint**
+```json
+GET /scrape/tt1234567
+{
+  "title": "Example Movie",
+  "poster": "https://...",
+  "is_movie": true,
+  "seasons": 0,
+  "episodes": [],
+  "imdb_id": "tt1234567"
+}
+```
+
+#### **Torrent Search Response**
+```json
+GET /torrents/movie/?imdb_id=tt1234567
+{
+  "torrents": [
+    {
+      "name": "Example Movie 2024 1080p BluRay x264",
+      "magnet": "magnet:?xt=urn:btih:...",
+      "quality": "1080p",
+      "seeders": 245,
+      "size": "2.1 GB",
+      "file_idx": 0,
+      "info_hash": "..."
+    }
+  ]
+}
+```
+
+#### **Streaming Endpoint**
+```json
+GET /stream/vlc?magnet_link=...&file_idx=0
+{
+  "status": "success",
+  "message": "VLC streaming started",
+  "player_pid": 12345
+}
+```
+
+### 📱 **Mobile/Responsive Views**
+![Responsive Design](screenshots/extension-responsive.png)
+*Extension optimized for different screen sizes and zoom levels*
+
+### 🎯 **Feature Highlights**
+
+| Feature | Screenshot | Description |
+|---------|------------|-------------|
+| 🎨 **Modern UI** | ![UI](screenshots/ui-modern.png) | Glass-morphism with purple theme |
+| 🔍 **Smart Search** | ![Search](screenshots/search-smart.png) | IMDB integration with auto-complete |
+| 📺 **VLC Integration** | ![VLC](screenshots/vlc-integration.png) | Seamless media player control |
+| 📚 **Watch History** | ![History](screenshots/history-tracking.png) | Persistent episode tracking |
+| ⚡ **Auto Select** | ![Auto](screenshots/auto-selection.png) | Intelligent torrent ranking |
+
+> **Note**: Screenshots are located in the `/screenshots` directory. For the latest UI updates, please refer to the live extension interface.
+
 ## ⚙️ Configuration
 
 ### 🔧 **Backend Configuration**
@@ -222,7 +292,7 @@ We welcome contributions! Here's how to get started:
 5. Open a Pull Request
 
 ### 🐛 **Bug Reports**
-Please use the [GitHub Issues](https://github.com/shaikshahid98/404Stream/issues) page to report bugs with:
+Please use the [GitHub Issues](https://github.com/Saadiq8149/404Stream/issues) page to report bugs with:
 - Detailed description
 - Steps to reproduce
 - Expected vs actual behavior
@@ -257,6 +327,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 **Made with 💜 by the 404Stream Team**
 
-[⭐ Star this repo](https://github.com/shaikshahid98/404Stream) | [🐛 Report Bug](https://github.com/shaikshahid98/404Stream/issues) | [💡 Request Feature](https://github.com/shaikshahid98/404Stream/issues)
+[⭐ Star this repo](https://github.com/Saadiq8149/404Stream) | [🐛 Report Bug](https://github.com/Saadiq8149/404Stream/issues) | [💡 Request Feature](https://github.com/Saadiq8149/404Stream/issues)
 
 </div>
