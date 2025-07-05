@@ -89,9 +89,6 @@ def start_qbittorrent():
 def main():
     print("🎉 Starting 404Stream launcher...")
 
-    # Install Python requirements (if not bundled into EXE)
-    install_requirements()
-
     # Start qBittorrent
     start_qbittorrent()
     time.sleep(1)

@@ -17,8 +17,6 @@ if not is_admin():
 
 # -------------------- Paths --------------------
 INSTALL_DIR = Path(os.environ['LOCALAPPDATA']) / "404Stream"
-DESKTOP = Path(os.environ['USERPROFILE']) / "Desktop"
-LAUNCHER_NAME = "404Stream.lnk"
 VLC_PATH = Path(r"C:\Program Files\VideoLAN\VLC\vlc.exe")
 QBIT_PATH = Path(r"C:\Program Files\qBittorrent\qbittorrent.exe")
 QBIT_CONFIG_PATH = Path(os.environ["APPDATA"]) / "qBittorrent" / "qBittorrent.ini"
@@ -178,11 +176,11 @@ def configure_qbittorrent():
                 print(f"⚙️ Could not read existing config ({e}), will recreate...")
 
         # qBittorrent config content - exact format as shown
-        config_content = """[Preferences]
+            config_content = """[Preferences]
             General\\CloseToTrayNotified=true
             WebUI\\Enabled=true
-            webui\\password_ha1=@ByteArray(5fbaa7bc1fcd7e2c58cda51f4f1e3a35)
-            WebUI\\Password_PBKDF2="@ByteArray(2qFYsRE4JYnYFTDIiox8pA==:K+0SwVfPiiDM9LEqx9OvKm1GVZJ0lp9WkHSaPfN0PGUzp/g3q1mtfcRvTcKhj1Pl388AaNfXRnubZChkOGCd1A==)"
+            webui\\password_ha1=@ByteArray(e64b78fc3bc91bcbc7dc232ba8ec59e0)
+            WebUI\\Password_PBKDF2="@ByteArray(xt7ArTjDRrqVhQvf+AabZA==:oE8KHpNNPJD7kRj9U5Uzy9fI7KjTK3/+mw/+P3Fl4q8WC+eSc3VfJQ+4SdLkOiOvocWDqLLJ6d9xzfAoUOZluw==)"
             WebUI\\LocalHostAuth=false
             general\\locale=en
             webui\\useupnp=false
@@ -208,76 +206,6 @@ def configure_qbittorrent():
         print("  2. Go to Tools → Options → Web UI")
         print("  3. Enable Web UI on port 8080")
         print("  4. Set username: admin, password: admin")
-
-def create_shortcut():
-    """Create desktop shortcut by copying launcher to desktop"""
-    print("🎯 Creating desktop launcher...")
-
-    # Check for both .exe and .py versions
-    target_exe = INSTALL_DIR / "launcher.exe"
-    target_py = INSTALL_DIR / "launcher.py"
-
-    try:
-        if target_exe.exists():
-            # Copy the .exe file directly to desktop
-            desktop_launcher = DESKTOP / "404Stream.exe"
-            shutil.copy2(target_exe, desktop_launcher)
-            print(f"✅ Launcher copied to desktop: {desktop_launcher}")
-
-        elif target_py.exists():
-            # Create a batch file that runs the Python script
-            create_batch_launcher()
-
-        else:
-            print("⚠️  No launcher file found!")
-            return
-
-    except Exception as e:
-        print(f"⚠️  Failed to create desktop launcher: {e}")
-        print("🔄 Trying batch file method...")
-        create_batch_launcher()
-
-def create_batch_launcher():
-    """Create a batch file launcher as fallback"""
-    try:
-        batch_file = DESKTOP / "404Stream.bat"
-        target_py = INSTALL_DIR / "launcher.py"
-
-        if target_py.exists():
-            batch_content = f'''@echo off
-title 404Stream Launcher
-cd /d "{INSTALL_DIR}"
-python "{target_py}"
-if errorlevel 1 (
-    echo.
-    echo [ERROR] Failed to start 404Stream
-    echo Make sure Python is installed and in PATH
-    echo.
-    pause
-)
-'''
-        else:
-            # Fallback - just navigate to install directory
-            batch_content = f'''@echo off
-title 404Stream Directory
-echo Opening 404Stream installation directory...
-cd /d "{INSTALL_DIR}"
-explorer .
-echo.
-echo Please run launcher.py or launcher.exe from this directory
-pause
-'''
-
-        with open(batch_file, 'w') as f:
-            f.write(batch_content)
-
-        print(f"✅ Batch launcher created: {batch_file}")
-        print("   (Double-click this file to run 404Stream)")
-
-    except Exception as e:
-        print(f"⚠️  Failed to create batch launcher: {e}")
-        print("⚠️  Please run launcher manually from:")
-        print(f"     {INSTALL_DIR}")
 
 def install_requirements():
     req_path = INSTALL_DIR / "backend" / "requirements.txt"
@@ -307,16 +235,13 @@ def run():
     print("🚀 Installing 404Stream backend…")
 
     try:
-        create_install_dir()
-        copy_files()
         check_and_install_deps()
         configure_qbittorrent()
         install_requirements()
-        create_shortcut()
 
         ctypes.windll.user32.MessageBoxW(
             0,
-            "404Stream installed successfully!\n\nYou can now use the desktop shortcut to launch the application.",
+            "404Stream installed successfully!\n\nYou can now launch using laucher.exe",
             "Installation Complete",
             0
         )
