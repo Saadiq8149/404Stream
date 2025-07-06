@@ -120,14 +120,14 @@ We welcome contributions! Here's how to get started:
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
-### 🐛 **Bug Reports**
+###  **Bug Reports**
 Please use the [GitHub Issues](https://github.com/Saadiq8149/404Stream/issues) page to report bugs with:
 - Detailed description
 - Steps to reproduce
 - Expected vs actual behavior
 - Screenshots (if applicable)
 
-### 💡 **Feature Requests**
+### **Feature Requests**
 We love new ideas! Open an issue with:
 - Clear feature description
 - Use case examples
